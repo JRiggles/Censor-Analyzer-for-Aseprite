@@ -1,6 +1,0 @@
-{
-    "lua.targetVersion": "5.3",
-    "Lua.workspace.library": [
-        "lib\\Aseprite-Library\\Aseprite-Library.lua"
-    ]
-}
