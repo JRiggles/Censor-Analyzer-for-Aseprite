@@ -1,0 +1,22 @@
+{
+    "name": "",
+    "displayName": "",
+    "description": "",
+    "version": "1.0.0",
+    "author": {
+        "name": "John Riggles",
+        "email": "jriggles@icloud.com",
+        "url": "https://jriggl.es/"
+    },
+    "contributors": [],
+    "publisher": "sudo_whoami",
+    "license": "MIT",
+    "categories": ["Scripts"],
+    "contributes": {
+        "scripts": [
+            {
+                "path": "./<extension name here>.lua"
+            }
+        ]
+    }
+}

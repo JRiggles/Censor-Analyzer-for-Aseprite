@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build Aseprite extension",
+            "type": "shell",
+            "command": "if [[ ${fileBasename} == *.lua ]]; then rm ${fileBasenameNoExtension}.aseprite-extension; zip -r build.zip extension/* && mv build.zip ${fileBasenameNoExtension}.aseprite-extension; else echo 'Build error: ${fileBasename} is not a lua file' >&2; exit 1; fi",
+            "problemMatcher": {
+                "owner": "custom",
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": {
+                    "regexp": ".*Build error.*",
+                    "severity": 1,
+                    "file": 1,
+                    "message": 0
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
