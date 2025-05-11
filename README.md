@@ -10,6 +10,8 @@ Initial release!
 ## Requirements
 This extension has been tested on Mac OS (specifically Mac OS Sequoia 15.4.1)
 
+The extension is currently Mac OS-only. Future releases will also support Windows. Linux support is not an immediate goal, but if I can get it working I will!
+
 It is intended to run on Aseprite version 1.3.7 or later and requires API version 28 (as long as you have the latest version of Aseprite, you should be fine!)
 
 ## Permissions
