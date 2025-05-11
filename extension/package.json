@@ -1,8 +1,8 @@
 {
-    "name": "",
-    "displayName": "",
-    "description": "",
-    "version": "1.0.0",
+    "name": "censor-analyzer-for-aseprite",
+    "displayName": "Censor Analyzer for Aseprite",
+    "description": "Perform color palette analysis using Quickmarble's Censor palette analyzer directly within Aseprite",
+    "version": "0.1.0",
     "author": {
         "name": "John Riggles",
         "email": "jriggles@icloud.com",
@@ -15,7 +15,7 @@
     "contributes": {
         "scripts": [
             {
-                "path": "./<extension name here>.lua"
+                "path": "./censor-analyzer.lua"
             }
         ]
     }
