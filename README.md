@@ -54,6 +54,9 @@ This extension relies on two key dependencies:
 >
 > `cargo install censor-analyser`
 
+
+**TODO:** The plan for future versions of this extension is to bundle the Censor tool so you don't have to worry about installing it yourself!
+
 ## Thank you!
 
 Huge thanks to Quickmarble for creating the amazing Censor tool
