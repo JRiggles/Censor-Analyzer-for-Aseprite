@@ -1,6 +1,6 @@
 # Censor Color Palette Analyzer for Aseprite
 
-*current release: [v0.1.0](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite)*
+*current release: [v0.1.0-pre](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite)*
 
 This [Aseprite](https://aseprite.org) extension allows you to perform color palette analysis using Quickmarble's [Censor](https://github.com/Quickmarble/censor) palette analyzer directly within Aseprite.
 
