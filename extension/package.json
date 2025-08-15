@@ -2,7 +2,7 @@
     "name": "censor-analyzer-for-aseprite",
     "displayName": "Censor Analyzer for Aseprite",
     "description": "Perform color palette analysis using Quickmarble's Censor palette analyzer directly within Aseprite",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "author": {
         "name": "John Riggles",
         "email": "jriggles@icloud.com",
