@@ -8,13 +8,12 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ]]
-
 -- stop complaining about unknown Aseprite API methods
 ---@diagnostic disable: undefined-global
 -- ignore dialogs which are defined with local names for readablity, but may be unused
 ---@diagnostic disable: unused-local
 
-local preferences = {} -- create a global table to store extension preferences
+local preferences = {} -- create a table to store extension preferences
 
 local function getActiveSprite()
   local sprite = app.sprite
@@ -50,17 +49,29 @@ local function buildColorList(palette)
   return table.concat(hexColors, ",")
 end
 
-local function locateExecutable()
+-- NOTE: app.os.arm64 isn't working on Mac - Need to confirm on other OS's; bug in Aseprite API?
+local function selectExecutable()
   if app.os.macos then
-    return "/executable/macOS/censor"
+    return "/bin/macOS/censor"
+
   elseif app.os.linux then
-    -- return = "executable/linux/censor"
-    return app.alert("This extension is macOS only for now! Please check back later.") -- TODO
+    if app.os.arm64 then
+      return "/executable/linux/arm/censor"
+    elseif app.os.x64 then
+      return "/bin/linux/x64/censor"
+    else
+      return app.alert("32-bit Linux is not supported.")
+    end
+
   elseif app.os.windows then
-    -- return "executable/win/censor.exe"
-    return app.alert("This extension is macOS only for now! Please check back later.") -- TODO
+    if app.os.x64 then
+      return "/bin/win/censor.exe"
+    else
+      return app.alert("32-bit Windows is not supported.")
+    end
+
   else
-    return app.alert("Unsupported OS. This operating system is not recognized.")
+    return app.alert("Unsupported operating system.")
   end
 end
 
@@ -71,48 +82,36 @@ local function removeExistingAnalysisFile(outputFile)
 end
 
 local function performCensorAnalysis(colorList)
-  local userDocsPath = app.fs.userDocsPath
-  local outputFile = app.fs.joinPath(userDocsPath, "analysis.png")
+  local outputFile = app.fs.joinPath(app.fs.userDocsPath, "analysis.png")
   removeExistingAnalysisFile(outputFile)
 
-  -- The censor executable is bundled with the extension, so we need to find it
-  local extensionPath = app.fs.joinPath(
-    app.fs.userConfigPath,
-    "extensions/censor-analyzer-for-aseprite"
-  )
-  local executablePath = locateExecutable()
-
-  -- executablePath = "\"" .. app.fs.joinPath(extensionPath, executablePath) .. "\""
-  -- executablePath = "/Users/jriggles/.cargo/bin/censor"
-  executablePath = app.fs.joinPath(userDocsPath, ".cargo/bin/censor")
-
-  if not app.fs.isFile(executablePath) then
-    return app.alert{
-      title="Censor executable not found",
-      text="Please install the Censor CLI from https://github.com/quickmarble/censor"
-    }
-  end
-
-  local command = executablePath ..  " analyse -c " .. colorList .. " -o \"" .. outputFile .. "\""
-  -- print(command)  -- for debugging
+  -- the censor executable is bundled with the extension, so we need to choose the correct build
+  -- for the current operating system
+  local executablePath = '"' .. PluginPath .. selectExecutable() .. '"'
+  -- build command to run the palette analysis
+  local command = string.format('%s analyse -c %s -o "%s"', executablePath, colorList, outputFile)
   os.execute(command)
 
   if app.fs.isFile(outputFile) then
     app.command.openFile { filename = app.fs.normalizePath(outputFile) }
   else
-    app.alert{
-      title="Censor palette analysis failed",
-      text="Could not generate an analysis plot for this palette."
+    app.alert {
+      title = "Censor palette analysis failed",
+      text = "Could not generate an analysis plot for this palette."
     }
   end
 end
 
 local function main()
   local sprite = getActiveSprite()
-  if not sprite then return end
+  if not sprite then
+    return
+  end
 
   local palette = getSpritePalette(sprite)
-  if not palette then return end
+  if not palette then
+    return
+  end
 
   local colorList = buildColorList(palette)
   performCensorAnalysis(colorList)
@@ -123,6 +122,9 @@ end
 function init(plugin) -- initialize extension
   preferences = plugin.preferences -- update preferences global with plugin.preferences values
 
+  PluginPath = plugin.path -- store this plugin's path in a global variable
+
+  plugin:newMenuSeparator {group = "palette_generation"}
   plugin:newCommand {
     id = "censorAnalyze",
     title = "Analyze Palette with Censor",
