@@ -4,7 +4,7 @@
     <img src="screenshots/preview 2.png" alt="Preview Image">
 </p>
 
-*current release: [v0.2.0-pre](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite)*
+*current release: [v0.2.1-pre](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite)*
 
 This [Aseprite](https://aseprite.org) extension allows you to perform color palette analysis using Quickmarble's [Censor](https://github.com/Quickmarble/censor) palette analyzer directly within Aseprite.
 
@@ -36,7 +36,8 @@ When the analysis is complete, the plot will automatically open in Aseprite as *
 You can download this extension from [itch.io](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite) as a "pay what you want" tool
 
 ## TODO
-- [ ] Windows testing 
+- [ ] Mac OS testing
+- [x] Windows testing
 - [ ] Linux testing
 
 ## Thank you!

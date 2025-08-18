@@ -65,7 +65,7 @@ local function selectExecutable()
 
   elseif app.os.windows then
     if app.os.x64 then
-      return "/bin/win/censor.exe"
+      return "\\bin\\win\\censor.exe"
     else
       return app.alert("32-bit Windows is not supported.")
     end
@@ -77,12 +77,16 @@ end
 
 local function removeExistingAnalysisFile(outputFile)
   if app.fs.isFile(outputFile) then
-    os.execute("rm -f " .. outputFile)
+    if app.os.windows then
+      os.execute('del /f /q "' .. outputFile .. '"')
+    else -- for macOS and Linux
+      os.execute("rm -f " .. outputFile)
+    end
   end
 end
 
 local function performCensorAnalysis(colorList)
-  local outputFile = app.fs.joinPath(app.fs.userDocsPath, "analysis.png")
+  local outputFile = app.fs.joinPath(PluginPath, "analysis.png")
   removeExistingAnalysisFile(outputFile)
 
   -- the censor executable is bundled with the extension, so we need to choose the correct build
@@ -90,16 +94,38 @@ local function performCensorAnalysis(colorList)
   local executablePath = '"' .. PluginPath .. selectExecutable() .. '"'
   -- build command to run the palette analysis
   local command = string.format('%s analyse -c %s -o "%s"', executablePath, colorList, outputFile)
-  os.execute(command)
 
-  if app.fs.isFile(outputFile) then
-    app.command.openFile { filename = app.fs.normalizePath(outputFile) }
-  else
-    app.alert {
-      title = "Censor palette analysis failed",
-      text = "Could not generate an analysis plot for this palette."
-    }
+  if app.os.windows then
+    -- on Windows, we need to use cmd /c to run the command in a new command prompt
+    os.execute('start cmd /c "' .. command .. '"')
+  else -- for macOS and Linux
+    os.execute(command)  -- note: may need to use os.execute("sh -c '" .. command .. "'")
   end
+
+  local retryCount = 0
+  local maxRetries = 10 -- maximum number of retries to check for the output file
+
+  -- create a timer to check for the output file every 0.5 seconds
+  -- (mostly for Windows, which can take a while to generate the file for some reason)
+  FileTimer = Timer{
+    interval=0.5,
+    ontick=function()
+      if app.fs.isFile(outputFile) then
+        FileTimer:stop() -- stop the timer if the file is created
+        app.refresh() -- refresh Aseprite to ensure the file is recognized
+        -- open the generated analysis file in Aseprite
+        app.command.openFile { filename = app.fs.normalizePath(outputFile) }
+      elseif retryCount >= maxRetries then
+        FileTimer:stop() -- stop the timer after max retries
+        app.alert {
+          title = "Censor palette analysis failed",
+          text = "Could not generate an analysis plot for this palette."
+        }
+      else
+        retryCount = retryCount + 1
+      end
+    end }
+  FileTimer:start()
 end
 
 local function main()
