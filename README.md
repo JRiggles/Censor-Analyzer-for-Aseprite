@@ -36,7 +36,7 @@ When the analysis is complete, the plot will automatically open in Aseprite as *
 You can download this extension from [itch.io](https://sudo-whoami.itch.io/censor-analyzer-for-aseprite) as a "pay what you want" tool
 
 ## TODO
-- [ ] Mac OS testing
+- [x] Mac OS testing
 - [x] Windows testing
 - [ ] Linux testing
 
